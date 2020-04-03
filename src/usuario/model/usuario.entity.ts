@@ -1,5 +1,6 @@
-import { Column, Entity, PrimaryGeneratedColumn, AfterInsert } from 'typeorm';
+import { AfterInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Perfil } from './usuario.perfil';
+import { LeituraEntity } from 'src/leitura/model/leitura.model';
 
 @Entity()
 export class UsuarioEntity {
@@ -30,6 +31,9 @@ export class UsuarioEntity {
 
     @Column({ type: 'enum', enum: Perfil, default: Perfil.USUARIO })
     perfil: Perfil
+
+    @OneToMany(type => LeituraEntity, leitura => leitura.postagem)
+    leituras: LeituraEntity[]
 
     @AfterInsert()
     removeSenha() {
