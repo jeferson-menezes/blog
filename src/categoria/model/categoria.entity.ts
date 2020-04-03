@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
 import { PostagemEntity } from 'src/postagem/model/postagem.entity';
 
-@Entity()
+@Entity({ name: 'categoria' })
 export class CategoriaEntity {
 
     @PrimaryGeneratedColumn({ type: "bigint" })

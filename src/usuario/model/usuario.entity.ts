@@ -1,8 +1,8 @@
 import { AfterInsert, Column, Entity, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { Perfil } from './usuario.perfil';
-import { LeituraEntity } from 'src/leitura/model/leitura.model';
+import { LeituraEntity } from 'src/leitura/model/leitura.entity';
 
-@Entity()
+@Entity({ name: 'usuario' })
 export class UsuarioEntity {
 
     @PrimaryGeneratedColumn({ type: "bigint" })

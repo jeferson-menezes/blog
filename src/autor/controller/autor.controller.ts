@@ -1,6 +1,8 @@
-import { Body, Controller, Post, Get, Param, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Res, HttpStatus } from '@nestjs/common';
 import { AutorEntity } from '../model/autor.entity';
 import { AutorService } from '../service/autor.service';
+import { Response } from 'express'
+import { Mensagem } from 'src/shared/model/mensagem';
 
 @Controller('v1/autores')
 export class AutorController {
@@ -18,12 +20,16 @@ export class AutorController {
     }
 
     @Get(':id')
-    async detalha(@Param('id') id) {
-        return this.autorService.detalhar(id)
+    async detalha(@Res() res: Response, @Param('id') id) {
+        const promessa = await this.autorService.detalhar(id)
+        if (!promessa) res.status(HttpStatus.BAD_REQUEST).json(new Mensagem('Autor inválido!'));
+        res.json(promessa)
     }
 
     @Put(':id')
-    async atualiza(@Param('id') id, @Body() autor: AutorEntity) {
-        return this.autorService.atualizar(id, autor)
+    async atualiza(@Res() res: Response, @Param('id') id, @Body() autor: AutorEntity) {
+        const promessa = await this.autorService.atualizar(id, autor)
+        if (!promessa) res.status(HttpStatus.BAD_REQUEST).json(new Mensagem('Autor inválido!'));
+        res.json(new Mensagem('Autor atualizado com sucesso!'))
     }
 }

@@ -2,18 +2,18 @@ import { PostagemEntity } from 'src/postagem/model/postagem.entity';
 import { UsuarioEntity } from 'src/usuario/model/usuario.entity';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity({name:'leitura'})
 export class LeituraEntity {
 
-    // @PrimaryGeneratedColumn({ type: "bigint" })
-    // id: number;
+    @PrimaryGeneratedColumn({ type: "bigint" })
+    id: number;
 
-    @Column({ type: "double", precision: 2, default: 0 })
+    @Column({ type: "double" })
     tempo: number;
 
-    @ManyToOne(type => UsuarioEntity)
+    @ManyToOne(type => UsuarioEntity, usuario => usuario.leituras)
     usuario: UsuarioEntity
 
-    @ManyToOne(type => PostagemEntity, postagem => postagem.leituras)
+    @ManyToOne(type => PostagemEntity, postagem => postagem.leituras, { nullable: false })
     postagem: PostagemEntity
 }

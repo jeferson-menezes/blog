@@ -2,9 +2,9 @@ import { AutorEntity } from 'src/autor/model/autor.entity';
 import { CategoriaEntity } from 'src/categoria/model/categoria.entity';
 import { TagEntity } from 'src/tag/model/tag.entity';
 import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { LeituraEntity } from 'src/leitura/model/leitura.model';
+import { LeituraEntity } from 'src/leitura/model/leitura.entity';
 
-@Entity()
+@Entity({ name: 'postagem' })
 export class PostagemEntity {
 
     @PrimaryGeneratedColumn({ type: "bigint" })
@@ -45,11 +45,11 @@ export class PostagemEntity {
 
     @ManyToMany(type => CategoriaEntity, categoria => categoria.postagens,
         { cascade: true })
-    @JoinTable()
+    @JoinTable({name:'postagem_categorias'})
     categorias: CategoriaEntity[];
 
     @ManyToMany(type => TagEntity, { cascade: true })
-    @JoinTable()
+    @JoinTable({name:'postagem_tags'})
     tags: TagEntity[]
 
     @OneToMany(type => LeituraEntity, leitura => leitura.postagem)

@@ -1,8 +1,8 @@
 import { PostagemEntity } from 'src/postagem/model/postagem.entity';
 import { UsuarioEntity } from 'src/usuario/model/usuario.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'comentario' })
 export class ComentarioEntity {
 
     @PrimaryGeneratedColumn({ type: "bigint" })
@@ -20,10 +20,10 @@ export class ComentarioEntity {
     @Column({ type: "text", nullable: false })
     conteudo: string
 
-    @ManyToOne(type => PostagemEntity, { nullable : false})
+    @ManyToOne(type => PostagemEntity, { nullable: false })
     postagem: PostagemEntity
 
-    @ManyToOne(type => UsuarioEntity, { nullable : false})
+    @ManyToOne(type => UsuarioEntity, { nullable: false })
     usuario: UsuarioEntity
 
     @ManyToOne(type => ComentarioEntity)

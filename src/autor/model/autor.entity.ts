@@ -1,20 +1,20 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
-export class AutorEntity{
+@Entity({ name: 'autor' })
+export class AutorEntity {
 
     @PrimaryGeneratedColumn({ type: "bigint" })
     id: number;
 
     @Column({ type: "varchar", nullable: false })
-    nome:string
+    nome: string
 
     @Column({ type: "text", nullable: true, })
-    avatar:string
+    avatar: string
 
     @Column({ type: "text", nullable: true, })
-    introducao:string
+    introducao: string
 
     @Column({ type: "text", nullable: false })
-    perfil:string
+    perfil: string
 }

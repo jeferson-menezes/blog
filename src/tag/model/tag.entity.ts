@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'tag' })
 export class TagEntity {
 
     @PrimaryGeneratedColumn({ type: "bigint" })

@@ -17,7 +17,7 @@ import { TagModule } from './tag/tag.module';
 import { PostagemMetaEntity } from './postagem-meta/model/postagem.meta.entity';
 import { TagEntity } from './tag/model/tag.entity';
 import { LeituraModule } from './leitura/leitura.module';
-import { LeituraEntity } from './leitura/model/leitura.model';
+import { LeituraEntity } from './leitura/model/leitura.entity';
 
 @Module({
   imports: [
@@ -29,13 +29,13 @@ import { LeituraEntity } from './leitura/model/leitura.model';
       password: 'root',
       database: 'blog',
       entities: [
-        AutorEntity,
         CategoriaEntity,
-        ComentarioEntity,
-        PostagemEntity,
-        PostagemMetaEntity,
         TagEntity,
         UsuarioEntity,
+        AutorEntity,
+        PostagemMetaEntity,
+        ComentarioEntity,
+        PostagemEntity,
         LeituraEntity
       ],
       subscribers: [UsuarioSubscriber],

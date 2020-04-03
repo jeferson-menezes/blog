@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { PostagemEntity } from '../model/postagem.entity';
 import { PostagemService } from '../service/postagem.service';
+import { PostagemForm } from '../model/postagem.form';
 
 @Controller('v1/postagens')
 export class PostagemController {
@@ -8,8 +9,14 @@ export class PostagemController {
     constructor(private readonly postagemService: PostagemService) { }
 
     @Post()
-    async adiciona(@Body() postagem: PostagemEntity) {
-        return this.postagemService.adicionar(postagem)
+    async adiciona(@Body() postagem: PostagemForm) {
+        try {
+            
+            return this.postagemService.adicionar(postagem)
+
+        } catch (error) {
+            
+        }
     }
 
     @Get()

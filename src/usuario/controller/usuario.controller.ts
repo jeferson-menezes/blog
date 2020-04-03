@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { UsuarioEntity } from '../model/usuario.entity';
 import { UsuarioService } from '../service/usuario.service';
-import { Mensagem } from 'src/shared/mensagem';
+import { Mensagem } from 'src/shared/model/mensagem';
 
 @Controller('v1/usuarios')
 export class UsuarioController {
