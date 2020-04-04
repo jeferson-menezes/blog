@@ -5,6 +5,7 @@ import { UsuarioEntity } from 'src/usuario/model/usuario.entity';
 import { Repository, UpdateResult } from 'typeorm';
 import { ComentarioEntity } from '../model/comentario.entity';
 import { ComentarioForm } from '../model/comentario.form';
+import { Mensagem } from 'src/shared/model/mensagem';
 
 @Injectable()
 export class ComentarioService {
@@ -23,7 +24,6 @@ export class ComentarioService {
             if (!postagem) {
                 return Promise.reject('Postagem inválida!')
             }
-            console.log(comentario);
 
             const usuario = await this.usuarioRepository.findOne(form.usuarioId)
             if (!usuario) {
@@ -32,37 +32,42 @@ export class ComentarioService {
 
             if (form.parentId) {
                 const parent = await this.comentarioRepository.findOne(form.parentId)
-                if (!parent) return Promise.reject('Postagem pai inválida!')
+                if (!parent) return Promise.reject('Comentario pai inválido!')
                 comentario.parent = parent
             }
 
             comentario.postagem = postagem
             comentario.usuario = usuario
+            await this.comentarioRepository.save(comentario)
 
-            console.log(comentario);
+            comentario.usuario = undefined
+            comentario.postagem = undefined
+            comentario.parent = undefined
 
-            return this.comentarioRepository.save(comentario)
+            return Promise.resolve(comentario)
 
         } catch (error) {
             return Promise.reject(error)
         }
     }
 
-    listar(): Promise<ComentarioEntity[]> {
-        return this.comentarioRepository.find()
+    listarPorPostagem(postagemId: number): Promise<ComentarioEntity[]> {
+        return this.comentarioRepository
+            .createQueryBuilder('c')
+            .where("c.postagem.id = :id", { id: postagemId }).getMany()
     }
 
-    detalhar(id: string): Promise<ComentarioEntity> {
-        return this.comentarioRepository.findOne(id)
+    async detalhar(id: string): Promise<ComentarioEntity> {
+        const promessa = await this.comentarioRepository.findOne(id)
+        if (!promessa) return Promise.reject(new Mensagem('Comentário inválido!'))
+        return Promise.resolve(promessa)
     }
 
-    async atualizar(id: any, comentarioAtualiza: ComentarioEntity): Promise<UpdateResult> {
+    async atualizar(id: any, conteudo: string): Promise<UpdateResult> {
 
         const comentario = await this.comentarioRepository.findOne(id)
-
-        if (!comentario) return null;
-
-        return this.comentarioRepository.update(id, comentarioAtualiza);
+        if (!comentario) return Promise.reject(new Mensagem('Comentário inválido'));
+        return this.comentarioRepository.update(id, { conteudo });
     }
 
     private populaNovoObjeto(form: ComentarioForm): ComentarioEntity {

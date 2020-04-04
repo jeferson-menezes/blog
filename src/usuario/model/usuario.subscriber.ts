@@ -5,6 +5,6 @@ import { UsuarioEntity } from './usuario.entity';
 export class UsuarioSubscriber implements EntitySubscriberInterface<UsuarioEntity>{
 
     afterInsert(event: InsertEvent<UsuarioEntity>) {
-        event.entity.senha = undefined
+        event.entity.senha = ""
     }
 }

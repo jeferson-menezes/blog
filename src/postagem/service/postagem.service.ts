@@ -6,6 +6,7 @@ import { AutorEntity } from 'src/autor/model/autor.entity';
 import { PostagemForm } from '../model/postagem.form';
 import { CategoriaEntity } from 'src/categoria/model/categoria.entity';
 import { TagEntity } from 'src/tag/model/tag.entity';
+import { Paginacao } from 'src/shared/model/paginacao';
 
 @Injectable()
 export class PostagemService {
@@ -22,10 +23,6 @@ export class PostagemService {
         await queryRunner.startTransaction()
 
         try {
-
-            console.log(form);
-            
-
             const postagem = this.populaNovoObjeto(form)
 
             const autor = await queryRunner.manager.findOne(AutorEntity, form.autorId)
@@ -50,7 +47,8 @@ export class PostagemService {
                 postagem.parent = parent
             }
 
-            await queryRunner.manager.save(postagem)
+            await queryRunner.manager.save<PostagemEntity>(postagem)
+            await queryRunner.commitTransaction();
             return Promise.resolve(postagem);
 
         } catch (error) {
@@ -61,21 +59,71 @@ export class PostagemService {
         }
     }
 
-    listar(): Promise<PostagemEntity[]> {
-        return this.postagemRepository.find()
+    async  listarPaginado(size: number, page: number): Promise<Paginacao> {
+
+        const offset = page * size
+        const resultados = await this.postagemRepository
+            .createQueryBuilder('post')
+            .skip(offset)
+            .take(size)
+            .getMany()
+
+        const total = await this.postagemRepository
+            .createQueryBuilder('post')
+            .getCount()
+
+        const totalPages = Math.ceil(total / size)
+
+        const paginacao = new Paginacao(size, page, total, totalPages, resultados)
+        return Promise.resolve(paginacao)
     }
 
     detalhar(id: string): Promise<PostagemEntity> {
         return this.postagemRepository.findOne(id)
     }
 
-    async atualizar(id: any, postagemAtualiza: PostagemEntity): Promise<UpdateResult> {
+    async atualizar(id: any, formAtualiza: PostagemForm): Promise<any> {
+        const connection = getConnection()
+        const queryRunner = connection.createQueryRunner()
+        await queryRunner.connect()
 
-        const postagem = await this.postagemRepository.findOne(id)
+        await queryRunner.startTransaction()
 
-        if (!postagem) return null;
+        try {
+            const postagem = await queryRunner.manager.findOne(PostagemEntity, id)
+            if (!postagem)
+                return Promise.reject('Postagem inválida')
 
-        return this.postagemRepository.update(id, postagemAtualiza);
+            this.atualizaObjeto(formAtualiza, postagem)
+
+            const autor = await queryRunner.manager.findOne(AutorEntity, formAtualiza.autorId)
+            if (!autor)
+                return Promise.reject('Autor inválido')
+            postagem.autor = autor
+
+            const categorias = await queryRunner.manager.findByIds(CategoriaEntity, formAtualiza.categoriasId)
+            if (!categorias.length)
+                return Promise.reject('Não foi informado nenhuma categoria')
+            postagem.categorias = categorias
+
+
+            const tags = await queryRunner.manager.findByIds(TagEntity, formAtualiza.tagsId)
+            postagem.tags = tags
+
+
+            const parent = await queryRunner.manager.findOne(PostagemEntity, formAtualiza.parentId)
+            postagem.parent = parent
+
+            const resultados = await queryRunner.manager.save<PostagemEntity>(postagem);
+            await queryRunner.commitTransaction();
+            return Promise.resolve(resultados);
+
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+            return Promise.reject(error)
+        } finally {
+            await queryRunner.release()
+        }
     }
 
     private populaNovoObjeto(form: PostagemForm): PostagemEntity {
@@ -91,5 +139,18 @@ export class PostagemService {
             postagem.publicadoEm = new Date()
         }
         return postagem;
+    }
+
+    private atualizaObjeto(form: PostagemForm, postagem: PostagemEntity) {
+        postagem.titulo = form.titulo
+        postagem.metaTitulo = form.metaTitulo
+        postagem.slug = form.slug
+        postagem.sumario = form.sumario
+        postagem.conteudo = form.conteudo
+        postagem.publicado = form.publicado
+        postagem.alteradoEm = new Date()
+        if (form.publicado) {
+            postagem.publicadoEm = null
+        }
     }
 }

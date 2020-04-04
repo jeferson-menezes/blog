@@ -28,4 +28,7 @@ export class ComentarioEntity {
 
     @ManyToOne(type => ComentarioEntity)
     parent: ComentarioEntity
+
+    @Column({ nullable: true })
+    parentId: number;
 }

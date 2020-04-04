@@ -20,22 +20,34 @@ export class ComentarioController {
         }
     }
 
-    @Get()
-    async lista() {
-        return this.comentarioService.listar()
+    @Get('postagem/:id')
+    async lista(@Res() res: Response, @Param('id') id: number) {
+        try {
+            const resultado = await this.comentarioService.listarPorPostagem(id)
+            res.json(resultado)
+        } catch (error) {
+            res.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        }
     }
 
     @Get(':id')
     async detalha(@Res() res: Response, @Param('id') id) {
-        const promessa = await this.comentarioService.detalhar(id)
-        if (!promessa) res.status(HttpStatus.BAD_REQUEST).json(new Mensagem('Comentário inválido!'))
-        res.json(promessa)
+        try {
+            const promessa = await this.comentarioService.detalhar(id)
+            res.json(promessa)
+        } catch (error) {
+            res.status(HttpStatus.BAD_REQUEST).json(error)
+        }
     }
 
     @Put(':id')
     async atualiza(@Res() res: Response, @Param('id') id, @Body() comentario: ComentarioEntity) {
-        const promessa = await this.comentarioService.atualizar(id, comentario)
-        if (!promessa) res.status(HttpStatus.BAD_REQUEST).json(new Mensagem('Comentário inválido!'));
-        res.json(new Mensagem('Comentário atualizado com sucesso!'))
+        try {
+            const { conteudo } = comentario
+            await this.comentarioService.atualizar(id, conteudo)
+            res.json(new Mensagem('Comentário atualizado com sucesso!'))
+        } catch (error) {
+            res.status(HttpStatus.BAD_REQUEST).json(error);
+        }
     }
 }
