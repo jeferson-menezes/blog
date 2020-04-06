@@ -1,9 +1,11 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { AuthService } from '../service/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
+
+    constructor(private jwtService: JwtService) { }
 
     async use(req: any, res: any, next: Function) {
 
@@ -25,8 +27,14 @@ export class AuthMiddleware implements NestMiddleware {
             return res.status(401).send({ error: 'Token malformatted' })
         }
 
-        next()
-
+        try {
+            const decoded = await this.jwtService.verifyAsync(token)
+            res.id = decoded.id
+            return next()
+        } catch (error) {
+            console.error(error);
+            return res.status(401).send(error)
+        }
     }
 
 }

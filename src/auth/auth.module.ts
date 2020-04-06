@@ -13,7 +13,7 @@ import { AuthMiddleware } from './middleware/auth.middleware';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '240s' },
       
     })
   ],
@@ -26,7 +26,7 @@ export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(AuthMiddleware)
-      .exclude({ path: '', method: RequestMethod.ALL })
+      .exclude({ path: 'v1/auth/(.*)', method: RequestMethod.ALL })
       .forRoutes({ path: '*', method: RequestMethod.ALL })
   }
 }

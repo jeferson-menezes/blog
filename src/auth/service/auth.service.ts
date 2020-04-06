@@ -5,6 +5,7 @@ import { UsuarioService } from 'src/usuario/service/usuario.service';
 import { Crypt } from '../../shared/seguranca/usuario.crypt';
 import { AuthModel } from '../model/auth.model';
 import { UsuarioEntity } from 'src/usuario/model/usuario.entity';
+import { jwtConstants } from '../constants'
 
 @Injectable()
 export class AuthService {
@@ -47,4 +48,18 @@ export class AuthService {
     verify(token: string, options?: any) {
         return this.jwtService.verify(token, options)
     }
+
+    async verifica(token: string) {
+        try {
+            const restod = await this.jwtService.verifyAsync(token)
+            console.log(restod);
+            return restod;
+            
+        } catch (error) {
+            console.error(error);
+        }
+
+
+    }
+
 }

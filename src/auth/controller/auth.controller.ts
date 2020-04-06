@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Post, Res, Param, Get } from '@nestjs/common';
 import { Response } from 'express';
 import { UsuarioEntity } from 'src/usuario/model/usuario.entity';
 import { AuthModel } from '../model/auth.model';
@@ -22,5 +22,13 @@ export class AuthController {
     @Post('register')
     register(@Body() user: UsuarioEntity) {
         return this.authService.register(user)
+    }
+
+    @Post('token')
+    testa(@Body() token: any) {
+        const t = token.token
+        console.log(t);
+
+        return this.authService.verifica(t)
     }
 }
