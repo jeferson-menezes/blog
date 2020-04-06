@@ -6,6 +6,7 @@ import { Mensagem } from 'src/shared/model/mensagem';
 
 @Controller('v1/categorias')
 export class CategoriaController {
+    
     constructor(private readonly categoriaService: CategoriaService) { }
 
     @Post()

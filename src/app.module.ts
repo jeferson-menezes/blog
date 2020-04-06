@@ -17,6 +17,10 @@ import { TagEntity } from './tag/model/tag.entity';
 import { TagModule } from './tag/tag.module';
 import { UsuarioEntity } from './usuario/model/usuario.entity';
 import { UsuarioModule } from './usuario/usuario.module';
+import { LoggerModule } from './logger/logger.module';
+import { WinstonModule, winstonConsoleFormat } from '@payk/nestjs-winston'
+import { AuthModule } from './auth/auth.module';
+import * as winston from 'winston'
 
 @Module({
   imports: [
@@ -40,6 +44,22 @@ import { UsuarioModule } from './usuario/usuario.module';
       subscribers: [],
       synchronize: true,
     }),
+    WinstonModule.forRoot({
+      level: 'verbose',
+      format: winston.format.combine(
+        winston.format.timestamp(),
+        winstonConsoleFormat,
+        winston.format.json()
+      ),
+      transports: [
+        new winston.transports.File({
+          filename: 'application.log',
+          dirname: 'logs',
+          maxsize: 1000000,
+          maxFiles: 10
+        })
+      ]
+    }),
     UsuarioModule,
     AcessoModule,
     AutorModule,
@@ -48,7 +68,9 @@ import { UsuarioModule } from './usuario/usuario.module';
     PostagemModule,
     PostagemMetaModule,
     TagModule,
-    LeituraModule
+    LeituraModule,
+    LoggerModule,
+    AuthModule
   ]
 })
 export class AppModule { }

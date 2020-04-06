@@ -3,14 +3,20 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Mensagem } from 'src/shared/model/mensagem';
 import { Repository } from 'typeorm';
 import { AutorEntity } from '../model/autor.entity';
+import { MeuLogger } from 'src/logger/service/meu-logger';
 
 @Injectable()
 export class AutorService {
 
     constructor(@InjectRepository(AutorEntity)
-    private autorRepository: Repository<AutorEntity>) { }
+
+    private autorRepository: Repository<AutorEntity>,
+        private meuLogger: MeuLogger) {
+        this.meuLogger.setContext(AutorEntity.name)
+    }
 
     adicionar(autor: AutorEntity): Promise<AutorEntity> {
+        this.meuLogger.log("Testando o log")
         return this.autorRepository.save(autor)
     }
 

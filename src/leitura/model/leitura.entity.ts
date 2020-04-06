@@ -11,6 +11,9 @@ export class LeituraEntity {
     @Column({ type: "double" })
     tempo: number;
 
+    @Column({ type: "datetime", nullable: true })
+    data: Date
+
     @ManyToOne(type => UsuarioEntity, usuario => usuario.leituras)
     usuario: UsuarioEntity
 
