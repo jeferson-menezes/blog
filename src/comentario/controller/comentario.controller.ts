@@ -5,7 +5,7 @@ import { ComentarioService } from '../service/comentario.service';
 import { Mensagem } from 'src/shared/model/mensagem';
 import { ComentarioForm } from '../model/comentario.form';
 
-@Controller('v1/comentarios')
+@Controller('comentarios')
 export class ComentarioController {
 
     constructor(private readonly comentarioService: ComentarioService) { }

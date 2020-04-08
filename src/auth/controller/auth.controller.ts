@@ -4,7 +4,7 @@ import { UsuarioEntity } from 'src/usuario/model/usuario.entity';
 import { AuthModel } from '../model/auth.model';
 import { AuthService } from '../service/auth.service';
 
-@Controller('v1/auth')
+@Controller('auth')
 export class AuthController {
 
     constructor(private authService: AuthService) { }
@@ -20,15 +20,22 @@ export class AuthController {
     }
 
     @Post('register')
-    register(@Body() user: UsuarioEntity) {
-        return this.authService.register(user)
+    async  register(@Res() res: Response, @Body() user: UsuarioEntity) {
+        try {
+            const promessa = await this.authService.register(user)
+            res.status(HttpStatus.CREATED).json(promessa)
+        } catch (error) {
+            res.status(HttpStatus.NOT_FOUND).json(error)
+        }
     }
 
-    @Post('token')
-    testa(@Body() token: any) {
-        const t = token.token
-        console.log(t);
-
-        return this.authService.verifica(t)
+    @Get('valid/:token')
+    async valida(@Res() res: Response, @Param('token') token: string) {
+        try {
+            const promessa = await this.authService.verify(token)
+            res.json(promessa)
+        } catch (error) {
+            res.status(HttpStatus.UNAUTHORIZED).json(error)
+        }
     }
 }

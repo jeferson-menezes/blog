@@ -13,20 +13,20 @@ import { AuthMiddleware } from './middleware/auth.middleware';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '240s' },
-      
+      signOptions: { expiresIn: '24h' },
     })
   ],
   providers: [AuthService],
   exports: [AuthService],
   controllers: [AuthController]
 })
-export class AuthModule implements NestModule {
+export class AuthModule { }
+// implements NestModule {
 
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .exclude({ path: 'v1/auth/(.*)', method: RequestMethod.ALL })
-      .forRoutes({ path: '*', method: RequestMethod.ALL })
-  }
-}
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer
+//       .apply(AuthMiddleware)
+//       .exclude({ path: 'auth/(.*)', method: RequestMethod.POST })
+//       .forRoutes({ path: '*', method: RequestMethod.ALL })
+//   }
+// }

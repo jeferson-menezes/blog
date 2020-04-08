@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Crypt } from '../../shared/seguranca/usuario.crypt';
 import { UsuarioEntity } from '../model/usuario.entity';
+import { Mensagem } from 'src/shared/model/mensagem';
+import { Paginacao } from 'src/shared/model/paginacao';
 
 @Injectable()
 export class UsuarioService {
@@ -12,18 +14,38 @@ export class UsuarioService {
 
     async save(usuario: UsuarioEntity): Promise<UsuarioEntity> {
 
+        const registrado = await this.findByEmail(usuario.email)
+
+        if (registrado) return Promise.reject(new Mensagem('E-mail já cadastrado'))
+
         usuario.registradoEm = new Date()
 
         usuario.senha = await Crypt.encript(usuario.senha);
 
-        return this.usuarioRepository.save(usuario);
+        await this.usuarioRepository.save(usuario);
+        usuario.senha = undefined
+        return Promise.resolve(usuario);
     }
 
-    findAll(): Promise<UsuarioEntity[]> {
-        return this.usuarioRepository.find();
+    async listarPaginado(size: number, page: number): Promise<Paginacao> {
+        const offset = page * size
+        const resultados = await this.usuarioRepository
+            .createQueryBuilder('user')
+            .skip(offset)
+            .take(size)
+            .getMany()
+
+        const total = await this.usuarioRepository
+            .createQueryBuilder('user')
+            .getCount()
+
+        const totalPages = Math.ceil(total / size)
+
+        const paginacao = new Paginacao(size, page, total, totalPages, resultados)
+        return Promise.resolve(paginacao)
     }
 
-    findOne(id: string): Promise<UsuarioEntity> {
+    detalhar(id: string): Promise<UsuarioEntity> {
         return this.usuarioRepository.findOne(id);
     }
 

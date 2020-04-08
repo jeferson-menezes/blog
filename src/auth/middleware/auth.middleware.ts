@@ -32,7 +32,6 @@ export class AuthMiddleware implements NestMiddleware {
             res.id = decoded.id
             return next()
         } catch (error) {
-            console.error(error);
             return res.status(401).send(error)
         }
     }

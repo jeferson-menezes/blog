@@ -1,34 +1,33 @@
-import { Body, Controller, Get, Post, Res, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, HttpStatus, Res } from '@nestjs/common';
+import { Mensagem } from 'src/shared/model/mensagem';
 import { UsuarioEntity } from '../model/usuario.entity';
 import { UsuarioService } from '../service/usuario.service';
-import { Mensagem } from 'src/shared/model/mensagem';
 import { Response } from 'express';
 
-@Controller('v1/usuarios')
+@Controller('usuarios')
 export class UsuarioController {
 
     constructor(private readonly usuarioService: UsuarioService) { }
 
     @Post()
-    async create(@Body() usuario: UsuarioEntity) {
-        const user = await this.usuarioService.findByEmail(usuario.email)
-
-        if (user) {
-            return new Mensagem("email já cadastrado!")
+    async create(@Res() res: Response, @Body() usuario: UsuarioEntity) {
+        try {
+            const promessa = await this.usuarioService.save(usuario);
+            res.status(HttpStatus.CREATED).json(promessa)
+        } catch (error) {
+            res.status(HttpStatus.BAD_REQUEST).json(error)
         }
-
-        return this.usuarioService.save(usuario);
     }
 
-    @Get()
-    async get(@Res() res: any) {
-        console.log("Id: ", res.id);
-        try {
+    @Get(':size/:page')
+    async lista(@Param('size') size: number, @Param('page') page: number) {
+        return this.usuarioService.listarPaginado(Number(size), Number(page))
+    }
 
-            const usuarios = await this.usuarioService.findAll();
-            res.json(usuarios)
-        } catch (error) {
-            res.status(HttpStatus.NOT_FOUND).json()
-        }
+    @Get(':id')
+    async detalha(@Res() res: Response, @Param('id') id) {
+        const promessa = await this.usuarioService.detalhar(id)
+        if (!promessa) res.status(HttpStatus.BAD_REQUEST).json(new Mensagem('Comentário inválido!'))
+        res.json(promessa)
     }
 }

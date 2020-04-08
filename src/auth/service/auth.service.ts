@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Mensagem } from 'src/shared/model/mensagem';
+import { UsuarioEntity } from 'src/usuario/model/usuario.entity';
 import { UsuarioService } from 'src/usuario/service/usuario.service';
 import { Crypt } from '../../shared/seguranca/usuario.crypt';
 import { AuthModel } from '../model/auth.model';
-import { UsuarioEntity } from 'src/usuario/model/usuario.entity';
-import { jwtConstants } from '../constants'
 
 @Injectable()
 export class AuthService {
@@ -28,13 +28,15 @@ export class AuthService {
 
         const accessToken = this.jwtService.sign({ id: usuario.id })
         usuario.senha = undefined
-        return Promise.resolve({
-            expires_in: 3600,
-            token: accessToken,
-            user: usuario,
-            status: 200
-        })
 
+        const payload = {
+            expires_in: "24h",
+            token: accessToken,
+            usuario: usuario,
+            status: 200
+        }
+
+        return Promise.resolve(payload)
     }
 
     private async validate(email: string): Promise<UsuarioEntity> {
@@ -45,21 +47,29 @@ export class AuthService {
         return await this.usuarioService.save(user)
     }
 
-    verify(token: string, options?: any) {
-        return this.jwtService.verify(token, options)
-    }
+    async verify(token: string) {
 
-    async verifica(token: string) {
         try {
-            const restod = await this.jwtService.verifyAsync(token)
-            console.log(restod);
-            return restod;
-            
+
+            const decoded = await this.jwtService.verifyAsync(token)
+            const { id } = decoded
+
+            const usuario = await this.usuarioService.detalhar(id)
+            if (!usuario)
+                return Promise.reject(new Mensagem('Usuário inválido!'))
+            usuario.senha = undefined
+            const payload = {
+                expires_in: "24h",
+                token: token,
+                usuario: usuario,
+                status: 200
+            }
+
+            return Promise.resolve(payload)
+
         } catch (error) {
-            console.error(error);
+            return Promise.reject(error)
         }
-
-
     }
 
 }

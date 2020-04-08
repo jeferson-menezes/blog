@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { winstonConsoleFormat, WinstonModule } from '@payk/nestjs-winston';
+import * as winston from 'winston';
 import { AcessoModule } from './acesso/acesso.module';
+import { AuthModule } from './auth/auth.module';
 import { AutorModule } from './autor/autor.module';
 import { AutorEntity } from './autor/model/autor.entity';
 import { CategoriaModule } from './categoria/categoria.module';
@@ -9,6 +12,7 @@ import { ComentarioModule } from './comentario/comentario.module';
 import { ComentarioEntity } from './comentario/model/comentario.entity';
 import { LeituraModule } from './leitura/leitura.module';
 import { LeituraEntity } from './leitura/model/leitura.entity';
+import { LoggerModule } from './logger/logger.module';
 import { PostagemMetaEntity } from './postagem-meta/model/postagem.meta.entity';
 import { PostagemMetaModule } from './postagem-meta/postagem-meta.module';
 import { PostagemEntity } from './postagem/model/postagem.entity';
@@ -17,10 +21,6 @@ import { TagEntity } from './tag/model/tag.entity';
 import { TagModule } from './tag/tag.module';
 import { UsuarioEntity } from './usuario/model/usuario.entity';
 import { UsuarioModule } from './usuario/usuario.module';
-import { LoggerModule } from './logger/logger.module';
-import { WinstonModule, winstonConsoleFormat } from '@payk/nestjs-winston'
-import { AuthModule } from './auth/auth.module';
-import * as winston from 'winston'
 
 @Module({
   imports: [

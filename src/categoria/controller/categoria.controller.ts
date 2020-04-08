@@ -4,7 +4,7 @@ import { CategoriaEntity } from '../model/categoria.entity';
 import { Response } from 'express';
 import { Mensagem } from 'src/shared/model/mensagem';
 
-@Controller('v1/categorias')
+@Controller('categorias')
 export class CategoriaController {
     
     constructor(private readonly categoriaService: CategoriaService) { }

@@ -3,7 +3,7 @@ import { Response } from 'express';
 import { LeituraService } from '../service/leitura.service';
 import { LeituraForm } from '../model/leitura.form';
 
-@Controller('v1/leituras')
+@Controller('leituras')
 export class LeituraController {
 
     constructor(private readonly leituraService: LeituraService) { }

@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { PostagemMetaEntity } from '../model/postagem.meta.entity';
 import { PostagemMetaService } from '../service/postagem.meta.service';
 
-@Controller('v1/postagem/metas')
+@Controller('postagem/metas')
 export class PostagemMetaController {
 
     constructor(private readonly postagemMetaService: PostagemMetaService) { }

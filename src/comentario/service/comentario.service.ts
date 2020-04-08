@@ -6,13 +6,15 @@ import { Repository, UpdateResult } from 'typeorm';
 import { ComentarioEntity } from '../model/comentario.entity';
 import { ComentarioForm } from '../model/comentario.form';
 import { Mensagem } from 'src/shared/model/mensagem';
+import { AppGateway } from 'src/app.gateway';
 
 @Injectable()
 export class ComentarioService {
 
     constructor(@InjectRepository(ComentarioEntity) private comentarioRepository: Repository<ComentarioEntity>,
         @InjectRepository(PostagemEntity) private postagemRepository: Repository<PostagemEntity>,
-        @InjectRepository(UsuarioEntity) private usuarioRepository: Repository<UsuarioEntity>) { }
+        @InjectRepository(UsuarioEntity) private usuarioRepository: Repository<UsuarioEntity>,
+        private gateway: AppGateway) { }
 
 
     async adicionar(form: ComentarioForm): Promise<any> {
@@ -43,7 +45,7 @@ export class ComentarioService {
             comentario.usuario = undefined
             comentario.postagem = undefined
             comentario.parent = undefined
-
+            this.gateway.wss.emit('comentario::salvo', "salvou um aqui: " + comentario.id)
             return Promise.resolve(comentario)
 
         } catch (error) {

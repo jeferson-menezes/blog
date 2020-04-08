@@ -1,11 +1,10 @@
 import { Body, Controller, Get, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { Mensagem } from 'src/shared/model/mensagem';
-import { PostagemEntity } from '../model/postagem.entity';
 import { PostagemForm } from '../model/postagem.form';
 import { PostagemService } from '../service/postagem.service';
 
-@Controller('v1/postagens')
+@Controller('postagens')
 export class PostagemController {
 
     constructor(private readonly postagemService: PostagemService) { }

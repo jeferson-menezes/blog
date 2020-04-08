@@ -4,7 +4,7 @@ import { AutorService } from '../service/autor.service';
 import { Response } from 'express'
 import { Mensagem } from 'src/shared/model/mensagem';
 
-@Controller('v1/autores')
+@Controller('autores')
 export class AutorController {
 
     constructor(private readonly autorService: AutorService) { }
