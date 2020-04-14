@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository, UpdateResult } from 'typeorm';
+import { getConnection, Repository, UpdateResult, Like } from 'typeorm';
 import { PostagemEntity } from '../model/postagem.entity';
 import { AutorEntity } from 'src/autor/model/autor.entity';
 import { PostagemForm } from '../model/postagem.form';
@@ -10,6 +10,7 @@ import { Paginacao } from 'src/shared/model/paginacao';
 
 @Injectable()
 export class PostagemService {
+
 
     constructor(@InjectRepository(PostagemEntity)
     private postagemRepository: Repository<PostagemEntity>) { }
@@ -77,7 +78,20 @@ export class PostagemService {
         const paginacao = new Paginacao(size, page, total, totalPages, resultados)
         return Promise.resolve(paginacao)
     }
+    listarPorCategorias(ids: number[]): any {
+        return this.postagemRepository
+            .createQueryBuilder('p')
+            .distinctOn(['p.id'])
+            .leftJoin('p.categorias', 'pc')
+            .where('pc.id IN (:...ids)', { ids: ids })
+            .limit(10)
+            .getMany()
+    }
 
+    listarPorTitulo(nome: string): any {
+        return this.postagemRepository
+            .find({ titulo: Like(`%${nome}%`) })
+    }
     detalhar(id: string): Promise<PostagemEntity> {
         return this.postagemRepository.findOne(id)
     }

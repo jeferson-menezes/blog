@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, Put, Res, Query } from '@nestjs/common';
 import { Response } from 'express';
 import { Mensagem } from 'src/shared/model/mensagem';
 import { PostagemForm } from '../model/postagem.form';
@@ -27,7 +27,7 @@ export class PostagemController {
     @Get(':id')
     async detalha(@Res() res: Response, @Param('id') id) {
         const promessa = await this.postagemService.detalhar(id)
-        if (!promessa) res.status(HttpStatus.BAD_REQUEST).json(new Mensagem('Comentário inválido!'))
+        if (!promessa) res.status(HttpStatus.BAD_REQUEST).json(new Mensagem('Postagem inválido!'))
         res.json(promessa)
     }
 
@@ -36,5 +36,16 @@ export class PostagemController {
         const promessa = await this.postagemService.atualizar(id, form)
         if (!promessa) res.status(HttpStatus.BAD_REQUEST).json(new Mensagem('Postagem inválida!'));
         res.json(new Mensagem('Postagem atualizada com sucesso!'))
+    }
+
+    @Get('lista/categorias/:categoriasId')
+    async listarPorCategorias(@Param('categoriasId') categoriasId: string) {
+        const arr = categoriasId.split(',').map(Number)
+        return this.postagemService.listarPorCategorias(arr)
+    }
+
+    @Get('lista/titulo/:titulo')
+    async listarPorTitulo(@Param('titulo') titulo: string) {
+        return this.postagemService.listarPorTitulo(titulo)
     }
 }
